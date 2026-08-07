@@ -151,7 +151,7 @@ async def start_chat():
     # Minimal imagineAI landing/welcome screen.
     robot_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        "assets",
+        "public",
         "robot.png"
     )
 
