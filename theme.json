@@ -1,0 +1,26 @@
+{
+  "variables": {
+    "light": {
+      "--background": "40 20% 98%",
+      "--foreground": "20 14% 12%",
+      "--card": "40 20% 98%",
+      "--card-foreground": "20 14% 12%",
+      "--popover": "0 0% 100%",
+      "--popover-foreground": "20 14% 12%",
+      "--primary": "20 14% 12%",
+      "--primary-foreground": "40 20% 98%",
+      "--secondary": "36 16% 93%",
+      "--secondary-foreground": "20 14% 12%",
+      "--muted": "36 16% 93%",
+      "--muted-foreground": "25 8% 42%",
+      "--accent": "38 42% 45%",
+      "--accent-foreground": "40 20% 98%",
+      "--destructive": "4 62% 45%",
+      "--destructive-foreground": "40 20% 98%",
+      "--border": "30 12% 88%",
+      "--input": "30 12% 88%",
+      "--ring": "38 42% 45%",
+      "--radius": "0.5rem"
+    }
+  }
+}

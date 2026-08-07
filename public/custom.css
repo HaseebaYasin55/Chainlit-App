@@ -1,0 +1,646 @@
+/* imagineAI custom.css — LOAD CHECK: v20260808m — if you can see this comment in DevTools > Sources > custom.css, the browser has the right file */
+/* imagineAI custom.css build 2026-08-08d (hero text-align fix) */
+
+/* TEMPORARY DIAGNOSTIC MARKER — remove once custom.css load is confirmed.
+   Adds a small pink dot bottom-right of the viewport. If you see it,
+   custom.css IS loading. If you don't, config.toml's custom_css path or
+   your public/ folder location is the problem, not the rules below. */
+body::after {
+  content: "";
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #F80061;
+  z-index: 999999;
+  pointer-events: none;
+}
+
+/*
+ * imagineAI — minimal, interactive, cute Chainlit UI
+ * Robot artwork: assets/robot.png
+ *
+ * Chainlit's current frontend is Shadcn/Tailwind based and themed through
+ * the CSS custom properties defined in theme.json (--background, --accent,
+ * --muted, etc). This file leans on those same variables so it always
+ * matches the palette in theme.json instead of hardcoding colors twice.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body,
+button,
+input,
+textarea {
+  font-family: var(--font-sans) !important;
+  letter-spacing: 0;
+}
+
+/* =========================================================
+   GENERAL
+   ========================================================= */
+
+.MuiPaper-root,
+[class*="shadow"] {
+  box-shadow: none !important;
+}
+
+button,
+.MuiButton-root {
+  border-radius: 12px !important;
+}
+
+/* =========================================================
+   REMOVE CHAINLIT BRANDING / README / THEME BUTTON
+   -----------------------------------------------------------
+   Chainlit has no config.toml flag that removes the README tab or the
+   theme toggle outright (upstream issues #2286 and #1805) — these rules
+   are the CSS fallback. public/custom.js additionally deletes the same
+   nodes from the DOM on every render for a belt-and-suspenders removal.
+   ========================================================= */
+
+button[aria-label*="theme" i],
+button[title*="theme" i],
+button[aria-label*="dark mode" i],
+button[title*="dark mode" i],
+button[aria-label*="light mode" i],
+[data-testid*="theme" i],
+[data-testid="theme-toggle"],
+
+button[aria-label*="readme" i],
+button[title*="readme" i],
+button[aria-label*="help" i][aria-label*="documentation" i],
+[data-testid*="readme" i],
+a[href*="readme" i],
+
+/* Icon-shape fallback for icon-only buttons with no aria-label at all --
+   scoped to header-like containers so it can never catch the composer's
+   send/attach buttons. custom.js does the same match at runtime and
+   actually removes the node; these rules just prevent a flash of the
+   button before the JS observer fires. */
+header button:has(svg[class*="lucide-sun" i]),
+header button:has(svg[class*="lucide-moon" i]),
+header button:has(svg[class*="lucide-book" i]),
+header button:has(svg[class*="lucide-help" i]),
+header button:has(svg[class*="lucide-circle-help" i]),
+header button:has(svg[class*="lucide-life-buoy" i]),
+nav button:has(svg[class*="lucide-sun" i]),
+nav button:has(svg[class*="lucide-moon" i]),
+nav button:has(svg[class*="lucide-book" i]),
+nav button:has(svg[class*="lucide-help" i]),
+[class*="header" i] button:has(svg[class*="lucide-sun" i]),
+[class*="header" i] button:has(svg[class*="lucide-moon" i]),
+[class*="header" i] button:has(svg[class*="lucide-book" i]),
+[class*="header" i] button:has(svg[class*="lucide-help" i]) {
+  display: none !important;
+}
+
+/* Chainlit logo / branding, and the default pink icon used as the
+   assistant avatar wherever it might still try to render. */
+img[src*="logo"],
+img[alt*="logo" i],
+img[alt*="chainlit" i],
+[data-testid*="logo" i],
+[data-testid*="avatar" i],
+[class*="avatar" i] img,
+img[class*="avatar" i] {
+  display: none !important;
+}
+
+/* =========================================================
+   SIDEBAR / CHAT HISTORY
+   ========================================================= */
+
+aside a,
+aside [role="button"],
+[data-testid="thread"] {
+  border-radius: 10px !important;
+  transition: background-color 140ms ease, transform 140ms ease;
+}
+
+aside a:hover,
+aside [role="button"]:hover,
+[data-testid="thread"]:hover {
+  background-color: hsl(var(--muted) / 0.7) !important;
+}
+
+aside a[aria-current="page"],
+aside a[data-active="true"],
+[data-testid="thread"][data-active="true"] {
+  border-left: 2px solid hsl(var(--accent)) !important;
+  background-color: hsl(var(--muted)) !important;
+}
+
+[data-testid="new-chat-button"] {
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+[data-testid="new-chat-button"]:hover {
+  background-color: hsl(var(--muted)) !important;
+}
+
+/* =========================================================
+   WELCOME / HERO
+   -----------------------------------------------------------
+             [ ROBOT ]
+             imagineAI
+        [  message input  ]
+   ========================================================= */
+/* =========================================================
+   WELCOME / HERO
+   ---------------------------------------------------------
+              [ ROBOT ]
+              imagineAI
+   ========================================================= */
+
+.markdown-body {
+  width: 100% !important;
+  max-width: 100% !important;
+  text-align: center !important;
+}
+
+/* The first message is our welcome/hero */
+.step:first-of-type,
+[data-testid="message"]:first-of-type {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  /* The parent row doesn't stretch its children to full width by default,
+     so width:100%/margin:auto above end up measured against a
+     shrink-wrapped box that hugs the left edge instead of the true
+     content column (the same column the composer is centered in).
+     align-self:center centers this block's own box within that column,
+     independent of how wide the block's content makes it. */
+  align-self: center !important;
+
+  width: 100% !important;
+  max-width: min(640px, 90vw) !important;
+
+  margin: 0 auto !important;
+  padding: 40px 0 24px 0 !important;
+
+  text-align: center !important;
+}
+
+@media (max-width: 640px) {
+  .step:first-of-type,
+  [data-testid="message"]:first-of-type {
+    max-width: 95vw !important;
+  }
+}
+
+/* Every wrapper div between .step and the actual content (image, h2,
+   subheading text) -- force each level to be a full-width, centered flex
+   column. Chainlit's own markup mixes "items-start" (shrink-to-fit,
+   left-aligned) and "w-full" (stretched) at different levels seemingly
+   at random, and a mismatch at ANY single level is enough to leave one
+   box (e.g. the heading+subheading wrapper) narrower than its siblings
+   and left-leaning inside the row -- which is exactly what produced the
+   "imagineAI" heading sitting right of the robot/composer's true center
+   even though the image itself looked fine. Rather than guessing which
+   specific level is the culprit (it can differ across Chainlit builds),
+   flatten all of them at once so none can drift.
+   Depth covers 4 wrapper levels deep (measured from the real DOM), which
+   stops short of the leaf content (img/h2/p) so their own specific rules
+   further down still have the final say on size/typography. */
+.step:first-of-type > *,
+.step:first-of-type > * > *,
+.step:first-of-type > * > * > *,
+.step:first-of-type > * > * > * > *,
+[data-testid="message"]:first-of-type > *,
+[data-testid="message"]:first-of-type > * > *,
+[data-testid="message"]:first-of-type > * > * > *,
+[data-testid="message"]:first-of-type > * > * > * > * {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Chainlit's tiny (1px) placeholder avatar circle doesn't have "avatar"
+   in its class name in this build, so the collapse rule below (which
+   matches by class/testid) misses it -- it's identified here instead by
+   its actual fingerprint (the pulsing rounded-full placeholder shape),
+   which is what was showing up as a stray dot near the hero text. */
+span[style*="width: 1px"][style*="height: 1px"],
+.animate-pulse.rounded-full.bg-muted {
+  display: none !important;
+}
+
+/* Chainlit reserves a left-hand gutter for the message avatar even when
+   the avatar image itself is hidden (default_avatar_file_url is a
+   transparent png) -- that empty gutter is what was pushing the hero
+   block right of true center. Collapse it to 0 width so the remaining
+   content area is genuinely full-width and centers correctly. */
+.step:first-of-type [class*="avatar" i],
+[data-testid="message"]:first-of-type [class*="avatar" i],
+.step:first-of-type [data-testid*="avatar" i],
+[data-testid="message"]:first-of-type [data-testid*="avatar" i] {
+  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  flex: 0 0 0 !important;
+}
+
+/* Also collapse whatever wrapper Chainlit puts around the message row
+   itself (name/author + content columns) so it isn't offset by a
+   sibling avatar column outside the .step element. */
+.step:first-of-type,
+[data-testid="message"]:first-of-type {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Belt-and-suspenders: in some Chainlit versions the avatar "gutter" is
+   not a separate element at all -- it's left padding/margin applied to
+   the row wrapper(s) that contain the message, which the selectors above
+   can't reach because they aren't the avatar itself. :has() lets us grab
+   the actual parent/grandparent of the hero message (whatever tag it is)
+   without knowing its class name, and re-center it directly. */
+body:has(.step:first-of-type) *:has(> .step:first-of-type),
+body:has([data-testid="message"]:first-of-type) *:has(> [data-testid="message"]:first-of-type),
+body:has(.step:first-of-type) *:has(> * > .step:first-of-type),
+body:has([data-testid="message"]:first-of-type) *:has(> * > [data-testid="message"]:first-of-type) {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  display: flex !important;
+  /* Plain "center" first as a fallback for browsers that don't understand
+     the "safe" overflow-alignment keyword (they'll ignore the next line
+     and keep this one). "safe center" is the actual fix: identical visual
+     centering while content fits the viewport, but avoids the flexbox rule
+     that makes start-side overflow (the hero above the center point)
+     unreachable by scrolling once the message list grows taller than the
+     screen. */
+  justify-content: center !important;
+  justify-content: safe center !important;
+}
+
+/* Swap visual order so the robot renders above the "imagineAI" heading,
+   without touching app.py -- flexbox `order` reorders the two direct
+   children (the markdown-content block and the image-element block) of
+   the already flex-column .step, independent of DOM/source order. */
+.step:first-of-type > *:has(img),
+[data-testid="message"]:first-of-type > *:has(img) {
+  order: -1 !important;
+}
+
+.step:first-of-type > *:has(h1, h2, h3),
+[data-testid="message"]:first-of-type > *:has(h1, h2, h3) {
+  order: 1 !important;
+}
+
+/* Center everything inside the hero */
+.step:first-of-type *,
+[data-testid="message"]:first-of-type * {
+  text-align: center !important;
+}
+
+/* The hero's outer box is correctly centered, but the heading/subheading
+   text can still render off-center within it if some wrapper along the
+   way (author-name column, avatar gutter, etc.) carries asymmetric left/
+   right padding -- the wrapper's box stays centered, but the text inside
+   it isn't, since padding-left != padding-right shifts content within an
+   otherwise-centered box. Zero horizontal padding on every element in the
+   hero so nothing can push the text off the box's true center. */
+.step:first-of-type,
+.step:first-of-type *,
+[data-testid="message"]:first-of-type,
+[data-testid="message"]:first-of-type * {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Every ancestor of the robot image, at ANY depth (not just its direct
+   parent) -- if Chainlit's Image component adds its own wrapper div
+   around the actual <img> (on top of the "flex flex-col gap-4" wrapper
+   already handled above), that extra level sits past where the fixed-
+   depth wrapper rules reach and keeps its default shrink-wrap/left-align
+   behavior no matter what. ":has(img)" (no ">" combinator) matches an
+   ancestor regardless of how many levels separate it from the <img>, so
+   this can't be missed by guessing the wrong depth again. */
+.step:first-of-type *:has(img),
+[data-testid="message"]:first-of-type *:has(img) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Remove the wrapper/card around the robot */
+.step:first-of-type *:has(> img),
+[data-testid="message"]:first-of-type *:has(> img) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  margin: 0 auto !important;
+}
+
+/* ROBOT */
+.step:first-of-type img,
+[data-testid="message"]:first-of-type img {
+  display: block !important;
+
+  width: auto !important;
+  height: 130px !important;
+  max-width: 280px !important;
+  max-height: 130px !important;
+
+  object-fit: contain !important;
+
+  margin: 0 auto 10px auto !important;
+  align-self: center !important;
+
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* imagineAI TITLE */
+.step:first-of-type h1,
+.step:first-of-type h2,
+.step:first-of-type h3,
+[data-testid="message"]:first-of-type h1,
+[data-testid="message"]:first-of-type h2,
+[data-testid="message"]:first-of-type h3 {
+  display: block !important;
+
+  width: 100% !important;
+
+  font-family: var(--font-sans) !important;
+  font-size: 40px !important;
+  line-height: 1.1 !important;
+  font-weight: 700 !important;
+  letter-spacing: -1.6px !important;
+
+  text-align: center !important;
+
+  margin: 8px auto 0 auto !important;
+  padding: 0 !important;
+
+  border: none !important;
+  color: #F80061 !important;
+}
+/* SUBHEADINGS (the two lines of copy below the "imagineAI" title)
+   -----------------------------------------------------------
+   This Chainlit version does NOT wrap the hero copy in .markdown-body
+   <p> tags -- it renders each line as its own
+   <div role="article" class="leading-7 ...">, a sibling of the <h2>.
+   The old ".markdown-body p" selector below matched nothing, which is
+   why these lines never got their max-width/centering and needed a JS
+   transform hack to fake it. Target the real element instead, and let
+   plain CSS do the centering (already-centered elements don't need a
+   runtime correction on top). Both ".markdown-body p" (older/other
+   Chainlit builds) and "[role='article']" (current build) are kept so
+   this survives future Chainlit DOM changes either way. */
+.step:first-of-type .markdown-body p,
+.step:first-of-type [role="article"],
+[data-testid="message"]:first-of-type .markdown-body p,
+[data-testid="message"]:first-of-type [role="article"] {
+  display: block !important;
+  margin: 0 auto !important;
+  max-width: 440px !important;
+  text-align: center !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.step:first-of-type .markdown-body p:nth-of-type(1),
+.step:first-of-type [role="article"]:nth-of-type(1),
+[data-testid="message"]:first-of-type .markdown-body p:nth-of-type(1),
+[data-testid="message"]:first-of-type [role="article"]:nth-of-type(1) {
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  margin-top: 10px !important;
+}
+
+.step:first-of-type .markdown-body p:nth-of-type(2),
+.step:first-of-type [role="article"]:nth-of-type(2),
+[data-testid="message"]:first-of-type .markdown-body p:nth-of-type(2),
+[data-testid="message"]:first-of-type [role="article"]:nth-of-type(2) {
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  margin-top: 14px !important;
+  opacity: 0.75;
+}
+
+/* =========================================================
+   COMPOSER
+   ========================================================= */
+
+#message-composer,
+[data-testid="message-composer"] {
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+#message-composer:focus-within,
+[data-testid="message-composer"]:focus-within {
+  border-color: hsl(var(--accent)) !important;
+  box-shadow: 0 0 0 3px hsl(var(--accent) / 0.1) !important;
+}
+
+/* =========================================================
+   SEND BUTTON
+   ========================================================= */
+
+[data-testid="send-button"] {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+  box-shadow: none !important;
+  border-radius: 12px !important;
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+[data-testid="send-button"]:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+[data-testid="send-button"]:active {
+  opacity: 0.72;
+  transform: translateY(0);
+}
+
+/* =========================================================
+   CHAT MESSAGES / BUBBLES
+   ========================================================= */
+
+.step,
+[data-testid="message"] {
+  border-radius: 16px !important;
+  border: none !important;
+  box-shadow: none !important;
+  max-width: 640px !important;
+}
+
+/* User messages: right-aligned, warm peach bubble (matches --accent). */
+[data-testid="user-message"],
+[data-testid="message"][data-author-type="user"],
+[data-step-type="user_message"] {
+  margin-left: auto !important;
+  background-color: hsl(var(--accent) / 0.16) !important;
+  border: 1px solid hsl(var(--accent) / 0.22) !important;
+}
+
+/* Assistant messages: left-aligned, clean white/card bubble. */
+[data-testid="assistant-message"],
+[data-testid="message"][data-author-type="assistant"],
+[data-step-type="assistant_message"],
+[data-step-type="run"] {
+  margin-right: auto !important;
+  background-color: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+/* Give bubbles consistent inner padding regardless of Chainlit's own
+   layout so text and inline images feel like one cohesive card. */
+[data-testid="message"] {
+  padding: 12px 16px !important;
+}
+
+/* Generated images: rendered inline inside the assistant bubble itself
+   (no separate outer card), rounded to match the bubble. */
+[data-testid="message"] img,
+.step img {
+  border-radius: 12px !important;
+  max-width: 100% !important;
+  margin-top: 8px !important;
+  box-shadow: none !important;
+  border: 1px solid hsl(var(--border) / 0.6) !important;
+}
+
+/* =========================================================
+   SIDEBAR LABELS
+   ========================================================= */
+
+aside .MuiTypography-overline,
+aside [class*="dateGroup"] {
+  color: hsl(var(--muted-foreground)) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em;
+}
+
+/* Download button injected next to the copy-image icon by custom.js */
+.imagineai-download-btn {
+  margin-left: 4px !important;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 640px) {
+  .markdown-body {
+    max-width: 100% !important;
+    padding: 0 1rem !important;
+  }
+
+  .markdown-body img {
+    width: auto !important;
+    height: 100px !important;
+    max-width: 220px !important;
+    max-height: 100px !important;
+    margin-top: 32px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .markdown-body h1,
+  .markdown-body h2 {
+    font-size: 30px !important;
+  }
+
+  [data-testid="empty-thread"],
+  [class*="welcome-screen" i] {
+    min-height: 60vh !important;
+  }
+}
+
+/* Remove only the three unwanted Chainlit header buttons */
+[data-testid="new-chat-button"],
+button[aria-label*="new chat" i],
+button[title*="new chat" i],
+button[aria-label*="new conversation" i],
+button[title*="new conversation" i] {
+  display: none !important;
+}
+/* =========================================================
+   MESSAGE LIST CONTAINER (kept at end of file on purpose)
+   -----------------------------------------------------------
+   Bubbles already have max-width:640px above, but the list that holds
+   them stretches to the full page width -- so a right-aligned user
+   bubble and a left-aligned assistant bubble end up pinned to opposite
+   edges of the whole screen instead of sharing one centered column.
+   ":has(> .step)"/":has(> [data-testid='message'])" grab the actual
+   parent of the messages, and ":has(.step)" (no ">") is a fallback in
+   case Chainlit groups consecutive same-author messages in their own
+   extra wrapper between the true scroll container and each bubble.
+   This block is placed at the very end of the file (rather than earlier
+   alongside the other bubble rules) so it always wins any specificity
+   tie against other rules targeting this same container -- an earlier
+   version of this rule sat mid-file and silently lost that tie.
+   ========================================================= */
+body:has(.step) *:has(> .step),
+body:has([data-testid="message"]) *:has(> [data-testid="message"]),
+body:has(.step) *:has(.step),
+body:has([data-testid="message"]) *:has([data-testid="message"]) {
+  max-width: 820px !important;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* =========================================================
+   SCROLLBAR
+   -----------------------------------------------------------
+   Hide the browser's default scrollbar (thick gray thumb + up/down
+   arrow buttons) across the app. Scrolling still works exactly the
+   same -- only the visible track/thumb/arrows are removed.
+   ========================================================= */
+* {
+  scrollbar-width: none !important;      /* Firefox */
+  -ms-overflow-style: none !important;   /* old Edge/IE */
+}
+
+*::-webkit-scrollbar {                   /* Chrome, Edge, Safari */
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
