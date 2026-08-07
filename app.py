@@ -154,7 +154,10 @@ async def start_chat():
         "public",
         "robot.png"
     )
-
+    print("========================================")
+    print("[imagineAI] Robot path:", robot_path)
+    print("[imagineAI] Robot exists:", os.path.exists(robot_path))
+    print("========================================")
     robot = cl.Image(
         path=robot_path,
         name="imagineAI",
