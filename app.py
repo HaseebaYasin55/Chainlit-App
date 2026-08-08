@@ -148,16 +148,26 @@ async def start_chat():
     chat_session = genai_client.chats.create(model=GEMINI_MODEL_NAME)
     cl.user_session.set("gemini_chat", chat_session)
 
+    # Minimal imagineAI landing/welcome screen.
+    robot_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "public",
+        "robot.png"
+    )
+    
+    robot = cl.Image(
+        path=robot_path,
+        name="imagineAI",
+        display="inline"
+    )
+
     await cl.Message(
         content=(
-            # Served directly as a static file from /public — no data-layer
-            # element upload involved, so it isn't affected by the missing
-            # storage_provider on SQLAlchemyDataLayer.
-            "![imagineAI](/public/robot.png)\n\n"
             "## imagineAI\n\n"
             "Welcome to imagineAI! Describe your vision and I'll create an image.\n\n"
             "Try typing: \"A futuristic city skyline at sunset with flying vehicles in cyberpunk style\""
         ),
+        elements=[robot],
     ).send()
 
 # ---------------------------------------------------------------------------
