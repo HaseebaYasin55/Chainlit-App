@@ -1,22 +1,7 @@
 console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-08-08i (removed conflicting hero centering hack, fixed in custom.css instead)", "color:#F80061;font-weight:bold;font-size:14px;");
 
-/**
- * imagineAI — UI cleanup script
- * -----------------------------
- * Chainlit does not (as of this writing) expose a config.toml flag that
- * fully removes the README/help button or the theme-toggle button from
- * the DOM (see github.com/Chainlit/chainlit/issues/2286 and #1805) — the
- * documented workarounds only hide them with CSS. To satisfy "removed,
- * not just hidden", this script actually deletes those nodes from the
- * page whenever Chainlit (re)renders its header, on top of the CSS rules
- * in custom.css which act as an instant first line of defense.
- */
 (function () {
   "use strict";
-
-  // Lucide icon components render as <svg class="lucide lucide-sun">, etc.
-  // Chainlit's header icons (theme toggle, readme/help) are almost always
-  // one of these shapes even when the button itself has no aria-label.
   const ICON_NAME_PATTERN =
   /lucide-(sun|moon|moon-star|book|book-open|book-open-text|help-circle|circle-help|life-buoy|info)/i;
 
@@ -37,21 +22,21 @@ console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-0
     ""
   ).toLowerCase();
 
-  // Remove README / Help
+
     if (
        /readme|help|documentation/.test(label)
   ) {
      return true;
   }
 
-  // Remove theme / mode switch
+  
     if (
       /dark mode|light mode|^theme$|toggle theme|switch theme/.test(label)
   ) {
       return true;
   }
 
-  // Remove New Chat / Compose button
+
     if (
      /new chat|new conversation|compose/.test(label)
   ) {
@@ -75,7 +60,6 @@ console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-0
      return true;
   }
 
-  // Left pencil/new-chat icon
     const svg = el.querySelector ? el.querySelector("svg") : null;
 
     if (svg) {
@@ -99,8 +83,7 @@ console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-0
   }
 
   function cleanup() {
-    // README/help + theme toggle: search the whole top bar area, not just
-    // <header>/<nav>, since Chainlit may wrap it in a plain <div>.
+
     document
       .querySelectorAll(
         "header button, nav button, [class*='header' i] button, [class*='navbar' i] button, [class*='topbar' i] button, [class*='top-bar' i] button, body > div > div:first-child button"
@@ -119,25 +102,11 @@ console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-0
     });
   }
 
-  // Run once immediately, then keep watching, since Chainlit is a
-  // client-rendered SPA that (re)builds the header after our script loads.
   cleanup();
   const observer = new MutationObserver(() => cleanup());
   observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
 
-/**
- * imagineAI — download button for generated images
- * --------------------------------------------------
- * Chainlit's image action row only exposes copy / thumbs-up / thumbs-down
- * icon buttons, not a download button. This finds that row per generated
- * image using several independent heuristics (icon name, aria-label/title
- * text, and a structural fallback), since no single one of these is
- * guaranteed to match across Chainlit versions/builds. It logs what it
- * finds to the console (prefixed "[imagineAI download-btn]") so it's
- * possible to see exactly why a button was or wasn't added, by opening
- * DevTools after a generated image appears.
- */
 (function () {
   "use strict";
 
@@ -168,8 +137,7 @@ console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-0
     return !!svg && ICON_PATTERN.test(svgClasses(svg));
   }
 
-  // Strategy 1: any parent element whose buttons include at least one
-  // recognizable copy/thumbs action button.
+
   function findToolbarsByRecognizedButtons() {
     const toolbars = new Set();
     document.querySelectorAll("button").forEach((btn) => {
@@ -179,10 +147,6 @@ console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-0
     return toolbars;
   }
 
-  // Strategy 2 (fallback): within a message that contains an image, the
-  // "toolbar" is whichever parent element holds the most sibling buttons
-  // -- action rows are reliably a cluster of 2+ buttons sharing one
-  // parent, which nothing else in a message typically looks like.
   function findToolbarByButtonCluster(container) {
     const buttons = Array.from(container.querySelectorAll("button"));
     if (buttons.length === 0) return null;
@@ -235,9 +199,6 @@ console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-0
       const filename =
         (img.alt || "image").replace(/[^a-zA-Z0-9]+/g, "_") + ".png";
       try {
-        // Fetch-as-blob downloads immediately even when img.src is a
-        // cross-origin or otherwise non-trivial URL, unlike a plain
-        // <a download> link which browsers can silently just navigate to.
         const response = await fetch(img.src);
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
@@ -310,18 +271,6 @@ console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-0
     subtree: true,
   });
 })();
-/**
- * imagineAI — force robot image above the "imagineAI" heading
- * -------------------------------------------------------------
- * Earlier attempts used CSS flexbox `order`, which assumes the image and
- * heading are direct flex-item siblings under a flex container -- an
- * assumption about Chainlit's internal DOM that didn't hold (or the
- * browser's :has() support wasn't cooperating). This does it directly in
- * the DOM instead: find the actual <img> and heading elements, find their
- * lowest common ancestor, and physically move the image's branch to
- * before the heading's branch. Works regardless of the exact nesting
- * Chainlit uses, and re-runs on every re-render via MutationObserver.
- */
 (function () {
   "use strict";
 
@@ -332,9 +281,6 @@ console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-0
   }
 
   function getHeroImg(container) {
-    // The robot element is created with name="imagineAI" in app.py, so
-    // Chainlit should render it with a matching alt attribute. Fall back
-    // to "first img inside the hero container" if that assumption is off.
     return (
       document.querySelector('img[alt="imagineAI" i]') ||
       (container && container.querySelector("img")) ||
@@ -356,8 +302,6 @@ console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-0
     return heading;
   }
 
-  // Given two nodes, find their lowest common ancestor, plus each node's
-  // direct child-of-that-ancestor branch (the node to actually move).
   function findLcaBranches(a, b) {
     const chain = new Set();
     for (let n = a; n; n = n.parentElement) chain.add(n);
@@ -404,29 +348,3 @@ console.log("%c[imagineAI custom.js] file loaded and running \u2014 build 2026-0
     { childList: true, subtree: true }
   );
 })();
-
-/**
- * imagineAI — hero centering
- * -----------------------------------------------------------
- * REMOVED (build 2026-08-08h): this used to be a requestAnimationFrame
- * loop that measured the composer's center and force-applied
- * transform: translateX(...) to the robot image and each hero text node
- * every frame. It's gone now because it was fighting custom.css instead
- * of fixing the actual problem:
- *
- *   - custom.css already centers the hero correctly (align-items:center
- *     + width:100%/margin:0 auto on .step:first-of-type, its image, its
- *     <h2>, and now its subheading elements too).
- *   - This script's own delta calc, applied on TOP of already-centered
- *     elements, is what produced the visible offset on the second
- *     subheading line -- two centering systems disagreeing, not one
- *     system failing.
- *   - The real reason the subheadings looked uncentered was that
- *     custom.css's old selector (".markdown-body p") didn't match this
- *     Chainlit build's actual markup (`div[role="article"]`, no
- *     .markdown-body wrapper) -- fixed directly in custom.css instead.
- *
- * If a future Chainlit upgrade reintroduces a genuine centering gap,
- * fix it in custom.css against the real DOM structure first; reach for
- * a JS transform hack only if CSS truly cannot express the fix.
- */
