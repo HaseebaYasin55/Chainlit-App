@@ -1,15 +1,15 @@
-# imagineAI
+# 🤖 imagineAI - ChainlitApp
 
 A minimal, custom-branded Chainlit chatbot that talks like an assistant and paints like an artist — conversational text powered by **Google Gemini**, image generation powered by **FLUX.1-schnell** (via Hugging Face's free Inference Providers API).
 
-## ✨ Features
+## Features
 
 -  **Conversational chat** — streamed responses from Gemini, with full multi-turn context per session
 -  **Text-to-image generation** — just ask ("generate an image of...", "draw...", "a picture of...", "paint...") and it's routed automatically to FLUX.1-schnell
 -  **One-click image download** — a download button is injected next to every generated image, alongside the existing copy/feedback actions
 -  **Fully custom UI** — a branded welcome screen, warm color palette, and cleaned-up header (no default Chainlit/README/theme-toggle clutter), built on top of Chainlit's Shadcn/Tailwind frontend
 
-## 🧰 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -19,7 +19,7 @@ A minimal, custom-branded Chainlit chatbot that talks like an assistant and pain
 | Chat history | SQLite + SQLAlchemy (`chainlit.data.sql_alchemy`) |
 | UI theming | `config.toml`, `theme.json`, `custom.css`, `custom.js` |
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 .
@@ -33,13 +33,13 @@ A minimal, custom-branded Chainlit chatbot that talks like an assistant and pain
 └── .env                 # Local API keys (not committed — see below)
 ```
 
-## ✅ Prerequisites
+## Prerequisites
 
 - Python 3.10+
 - A free **Gemini API key** → https://aistudio.google.com/apikey
 - A free **Hugging Face access token** → https://huggingface.co/settings/tokens
 
-## 🚀 Getting Started
+## Getting Started
 
 **1. Clone the repository**
 ```bash
@@ -73,13 +73,13 @@ chainlit run app.py -w
 ```
 Then open **http://localhost:8000** in your browser. The `-w` flag enables auto-reload on file changes.
 
-## 💬 Usage
+## Usage
 
 - Send a normal message → routed to **Gemini**, streamed back token-by-token.
 - Send something like *"generate an image of a futuristic city at sunset"* → routed to **FLUX.1-schnell**, and the generated image appears inline with a download button.
 - Reopen a past conversation from the sidebar to resume it with full context.
 
-## 🎨 Customization
+## Customization
 
 | File | Purpose |
 |---|---|
@@ -88,11 +88,6 @@ Then open **http://localhost:8000** in your browser. The `-w` flag enables auto-
 | `public/custom.css` | Welcome screen layout, message bubbles, composer, scrollbar |
 | `public/custom.js` | Removes default Chainlit branding/README/theme buttons, reorders the welcome hero, and injects the image download button |
 
-## ☁️ Live Link
-
-You can view the deployed app from here [imagineAI](https://chainlit-app-production.up.railway.app/)
-
----
 
 ## Author
 
